@@ -1,0 +1,73 @@
+export declare type ISO0100 = {
+    id: number;
+} & {
+    transactionRequestId: string;
+    lpsId: string;
+    lpsKey: string;
+    0: string;
+    2: string;
+    3: string;
+    4: string;
+    7: string;
+    11: string;
+    12: string;
+    13: string;
+    18: string;
+    22: string;
+    26: string;
+    28: string;
+    37: string;
+    41: string;
+    42: string;
+    49: string;
+    102: string;
+    103: string;
+    [k: string]: string;
+};
+export declare type ISO0110 = {
+    id: number;
+} & {
+    transactionRequestId: string;
+    lpsId: string;
+    lpsKey: string;
+    0: string;
+    3: string;
+    7: string;
+    11: string;
+    28: string;
+    30: string;
+    39: string;
+    41: string;
+    42: string;
+    48: string;
+    49: string;
+    102: string;
+    [k: string]: string;
+};
+export declare type ISO0200 = {
+    id: number;
+} & {
+    transactionRequestId: string;
+    lpsId: string;
+    lpsKey: string;
+    0: string;
+    2: string;
+    3: string;
+    4: string;
+    7: string;
+    11: string;
+    12: string;
+    13: string;
+    18: string;
+    22: string;
+    26: string;
+    28: string;
+    37: string;
+    41: string;
+    42: string;
+    49: string;
+    102: string;
+    103: string;
+    [k: string]: string;
+};
+export declare type ISOMessage = ISO0100 | ISO0110 | ISO0200;
