@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: donchangfoot/lps-adapter
+  repository: aptdocker1/adaptor_all
   tag: latest
   pullPolicy: Always
 
