@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   ingress-nginx:
   - apiVersion: v1
-    created: "2020-06-25T12:43:15.853002907+05:30"
+    created: "2020-06-25T13:14:34.334718945+05:30"
     description: Ingress-Nginx Helm chart for Kubernetes
-    digest: d8a5df9e10d1d86674b3ea0f8c8166b555697702d3c86ea8ad881e7d70a53fb0
+    digest: a9d4acc58529f7659a83ff93ec9406807ffd792dd871d093fa02de380930c1a2
     home: http://mojaloop.io
     icon: http://mojaloop.io/images/logo.png
     maintainers:
@@ -20,11 +20,11 @@ entries:
   lps-adapter:
   - apiVersion: v1
     appVersion: 9.6.0
-    created: "2020-06-25T12:43:15.857717875+05:30"
+    created: "2020-06-25T13:14:34.337337629+05:30"
     description: A Helm chart for Kubernetes
     digest: 5f246e67fe35b098afc53c1263422fc13d934bf1159c3c08f7fb6304c3ab0545
     name: lps-adapter
     urls:
     - https://appliedpayments.github.io/Mojaloopadaptor_apt/helm/lps-adapter-1.0.0.tgz
     version: 1.0.0
-generated: "2020-06-25T12:43:15.851185918+05:30"
+generated: "2020-06-25T13:14:34.334038362+05:30"
