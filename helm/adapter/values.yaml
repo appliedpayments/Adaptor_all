@@ -5,8 +5,13 @@
 replicaCount: 1
 
 image:
+<<<<<<< HEAD
   repository: aptdocker1/lpsadaptor20022db1
   tag: lpsadaptor
+=======
+  repository: aptdocker1/adaptor_all
+  tag: latest
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
   pullPolicy: Always
 
 imagePullSecrets: []
@@ -57,7 +62,11 @@ ingress:
     kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
+<<<<<<< HEAD
     - host: adapter.local
+=======
+    - host: adapter.iso-demo.openafrica.network
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
       paths: ["/"]
 
   tls: []

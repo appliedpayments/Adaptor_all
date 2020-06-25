@@ -13,6 +13,13 @@ var request = require("request");
 const fetch = require('node-fetch')
 const js2xmlparser = require("js2xmlparser");
 const MlNumber = require('@mojaloop/ml-number')
+<<<<<<< HEAD
+=======
+const IsoParser = require('iso_8583')
+var request = require("request");
+let xmlParser = require('xml-js');
+var parser = require("xml2js")
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
 
 export class BaseTcpRelay implements TcpRelay {
 
@@ -49,6 +56,7 @@ export class BaseTcpRelay implements TcpRelay {
     socket.on('data', async (data) => {
       try {
         this._logger.debug(`${this._lpsId} relay: Received buffer message`)
+<<<<<<< HEAD
         const legacyMessage = this._decode(data)
         const lpsKey = this.getLpsKey(legacyMessage)
         this._logger.debug(this._lpsId + ' relay: Received message from: ' + this._lpsId + ' lpsKey: ' + lpsKey)
@@ -57,6 +65,39 @@ export class BaseTcpRelay implements TcpRelay {
         const messageType = this.getMessageType(legacyMessage[0])
         const processingcode = legacyMessage[3].toString().substring(0,2)
         if(legacyMessage[0]=='0200'&& processingcode == '40'){
+=======
+        const mti = data.slice(2, 6).toString()
+        var  url = `http://122.165.152.131:8444/payeefsp/callbacks/{123}`  
+       // console.log('mti', mti)
+       // console.log('mti.length :',mti.length)
+        /****************************************************** */
+        if(mti == '0200'){
+      
+        /**********************************************************8 */
+
+
+
+
+        const legacyMessage = this._decode(data) 
+        
+        var lpsKey = null
+        var messageType = null
+        
+       
+        legacyMessage[0] = mti
+         lpsKey = this.getLpsKey(legacyMessage)
+        if(legacyMessage[0] != '0421'){
+        this._logger.debug(this._lpsId + ' relay: Received message from: ' + this._lpsId + ' lpsKey: ' + lpsKey)
+        this._logger.debug(this._lpsId + ' relay: Message converted to JSON: ' + JSON.stringify(legacyMessage))
+        }
+  
+         messageType = this.getMessageType(legacyMessage[0])
+        const processingcode = legacyMessage[3].toString().substring(0,2)
+        /**************************************************************************************************/
+            if(legacyMessage[0]=='0200'&& processingcode == '40'){
+
+              console.log('isomessage recieved :', legacyMessage)
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
           var iso20022 = {
             "xmlns": "urn:iso:std:iso:20022:tech:xsd:pacs.008.001.05",
             "xsi": "http://www.w3.org/2001/XMLSchema-instance",
@@ -148,14 +189,21 @@ export class BaseTcpRelay implements TcpRelay {
             }
         }
 
+<<<<<<< HEAD
         this._logger.info(js2xmlparser.parse("Document", iso20022));
         const url = 'http://122.165.152.131:8444/payeefsp/callbacks/{123}'
+=======
+        this._logger.info("Converting iso0200 to iso20022 xml format:")
+
+        console.log(js2xmlparser.parse("Document", iso20022));
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
         const response = await fetch(url, {
 
           headers: {
               Accept: 'text/xml'
           },
           method: "POST",
+<<<<<<< HEAD
           body: iso20022
       })
      
@@ -167,6 +215,35 @@ export class BaseTcpRelay implements TcpRelay {
           legacyMessage[39]='91'
           socket.write(encode({ ...legacyMessage, 0: '0210', 39: '91' }))
           this._logger.info('response 404 ')
+=======
+          body: js2xmlparser.parse("Document", iso20022)
+      })
+
+      this._logger.info('Sending to :'+url)
+
+      const iso200221 = {
+        "code": "3000",
+        "message": "Success"
+    }
+    
+    this._logger.info("Response for 20022:")
+    this._logger.info(js2xmlparser.parse("response", iso200221))
+
+      try{
+        if(response.status=='200'){
+          socket.write(encode({ ...legacyMessage, 0: '0210', 39: '00' }))
+          this._logger.info('Sending reponse:')
+          legacyMessage[0]= '0210'
+          legacyMessage[39]='00'
+          console.log(legacyMessage)
+        }else{
+          legacyMessage[39]='91'
+          socket.write(encode({ ...legacyMessage, 0: '0210', 39: '91' }))
+          this._logger.info('Sending reponse: ')
+          legacyMessage[0]= '0210'
+          legacyMessage[39]='91'
+          console.log(legacyMessage)
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
         }
        
       }catch(error){
@@ -174,15 +251,160 @@ export class BaseTcpRelay implements TcpRelay {
       }
 
         }
+<<<<<<< HEAD
         
         
+=======
+        /*************************************************************************************************/
+    
+      
+        var json_withdrawal_request  = {}
+        
+        switch(legacyMessage[0]){
+          case '0200':
+          console.log('isomessage recieved :', legacyMessage)
+        var buf = Buffer.from(data);
+         json_withdrawal_request = {
+            "input_Username": "test_user",
+            "input_Password": legacyMessage[103],
+            "input_CustomerMSISDN": legacyMessage[102],
+            "input_Currency": legacyMessage[49],
+            "input_BankShortcode": legacyMessage[2].slice(0,6),
+            "input_Amount": legacyMessage[4],
+            "input_ThirdPartyReference": "71c6d1f93910052de053",
+            "input_BankTransactionRef": "12345678123412341234123456789abc"
+        }
+       
+        console.log('Request to m-pesa : ', json_withdrawal_request)
+        console.log('Sending to m-pesa : ', url)
+
+        fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                },
+                method: "POST",
+                body: JSON.stringify(json_withdrawal_request)
+            })
+            .then((response:any) => response.text())
+            .then((text:any) => {
+                try {
+                    const data = JSON.parse(text);
+
+                    console.log('Response recieved from m-pesa:', data)
+                    if (data['output_ResponseCode'] == '0') {
+
+                        console.log("Transaction result:", data['output_ResponseDesc'])
+                        socket.write(encode({ ...legacyMessage, 0: '0210', 39: '00' }))
+                        
+                        legacyMessage[0]= '0210'
+                        legacyMessage[39]= '00'
+
+                        console.log('Resposne:', legacyMessage)
+                    } else if (data['output_ResponseCode'] == '-1') {
+
+                        console.log("Transaction result:", data['output_ResponseDesc'])
+                       socket.write(encode({ ...legacyMessage, 0: '0210', 39: '12' }))
+
+                       legacyMessage[0]= '0210'
+                       legacyMessage[39]= '12'
+
+                        console.log('Resposne:', legacyMessage)
+                    } else if (data['output_ResponseCode'] == '-3') {
+
+                        console.log("Transaction result:", data['output_ResponseDesc'])
+                        socket.write(encode({ ...legacyMessage, 0: '0210', 39: '54' }))
+
+                        legacyMessage[0]= '0210'
+                        legacyMessage[39]= '54'
+
+                        console.log('Resposne:', legacyMessage)
+                    }
+                } catch (error) {
+                    //this._logger.error(error)
+                }
+            });
+
+
+          break;
+        //   case'xml ':
+        //   let result = xmlParser.xml2json(data, { compact: true, spaces: 4 });
+
+        //   console.log("20022xmldata", result);
+        //   var objectValue = JSON.parse(result);
+        //   let transaction_id = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['PmtId']['TxId'];
+        //   let accountnumber = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['CdtrAcct']['Id']['Other']['Id']['_text'];
+        //   let customerMSDISDN = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['Cdtr']['CtctDtls']['MobNb']['_text'];
+        //   let amount = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['IntrBkSttlmAmt']['amount']['_text'];
+        //   let currency_code = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['IntrBkSttlmAmt']['Ccy']['_text']
+        //    json_withdrawal_request = {
+        //       "input_AccountNumber": accountnumber,
+        //       "input_CustomerMSISDN": customerMSDISDN,
+        //       "input_Amount": amount,
+        //       "input_Currency": currency_code,
+        //       "input_TransactionID": transaction_id
+        //   }
+
+        //   console.log('Request : ', json_withdrawal_request)
+        //  let result200 = await fetch(url, {
+        //           headers: {
+        //               'Accept': 'application/json',
+        //           },
+        //           method: "POST",
+        //           body: JSON.stringify(json_withdrawal_request)
+        //       }) .then((response: any) => response.text())
+        
+        //       .then((text: any) => {
+        //           try {
+        //             const data = JSON.parse(text);
+        //               console.log('data',data)
+        //               if (data['output_ResponseCode'] == '0') {
+    
+        //                   console.log("Transaction result:", data['output_ResponseDesc'])
+        //                   const iso20022 = {
+        //                       "code": "3000",
+        //                       "message": "Success"
+        //                   }
+        //                   socket.write(Buffer.from(js2xmlparser.parse("response", iso20022)))
+                      
+        //               } else if (data['output_ResponseCode'] == '-1') {
+    
+        //                   console.log("Transaction result:", data['output_ResponseDesc'])
+        //                   const iso20022 = {
+        //                       "code": "xxxx",
+        //                       "message": "Failure"
+        //                   }
+        //                   socket.write(Buffer.from(js2xmlparser.parse("response", iso20022)))
+        //               } else if (data['output_ResponseCode'] == '-3') {
+    
+        //                   console.log("Transaction result:", data['output_ResponseDesc'])
+        //                   const iso20022 = {
+        //                       "code": "4000",
+        //                       "message": "Duplicate"
+        //                   }
+        //                   socket.write(Buffer.from(js2xmlparser.parse("response", iso20022)))
+        //               }
+        //           } catch (error) {
+        //               //this._logger.error(error)
+        //           }
+        //         })
+        //   break ;
+          
+          case '0421':
+          break;
+        }
+        if(mti == '0200'){
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
         const lpsMessage = await LpsMessage.query().insertAndFetch({ lpsId: this._lpsId, lpsKey, type: messageType, content: legacyMessage })
         switch (messageType) {
           case LegacyMessageType.authorizationRequest:
             this._queueService.addToQueue('LegacyAuthorizationRequests', await this.mapFromAuthorizationRequest(lpsMessage.id, legacyMessage))
             break
           case LegacyMessageType.financialRequest:
+<<<<<<< HEAD
             this._queueService.addToQueue('LegacyFinancialRequests', await this.mapFromFinancialRequest(lpsMessage.id, legacyMessage))
+=======
+           // this._queueService.addToQueue('LegacyFinancialRequests', await this.mapFromFinancialRequest(lpsMessage.id, legacyMessage))
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
             break
           case LegacyMessageType.reversalRequest:
             try {
@@ -192,10 +414,149 @@ export class BaseTcpRelay implements TcpRelay {
               socket.write(encode({ ...legacyMessage, 0: '0430', 39: '21' }))
             }
             break
+<<<<<<< HEAD
           default:
             this._logger.error(`${this._lpsId} relay: Cannot handle legacy message with mti: ${legacyMessage[0]}`)
         }
       } catch (error) {
+=======
+            case null:
+            break
+          default:
+            this._logger.error(`${this._lpsId} relay: Cannot handle legacy message with mti: ${legacyMessage[0]}`)
+        }}}else if(mti == 'mpes'){
+          //******************************************************************************* */
+          console.log('Data Received :', data.toString())
+          const jsondata = JSON.parse(data.toString())
+    
+          console.log('M-PesaJSON :',jsondata)
+    
+          const transaction_request = {
+            transactionId: '7c23e80c-d078-4077-8263-2c047876fcf6',
+            payee: {
+              partyIdInfo: {
+                partyIdType: 'IBAN',
+                partyIdentifier:jsondata['input_BankShortcode'] ,
+                fspId: 'payerfsp'
+              }
+            },
+            payer: {
+              personalInfo: {
+                complexName: {
+                  firstName: jsondata['TestIsoMessage.java'],
+                  lastName: 'Hagman'
+                }
+              },
+              partyIdInfo: {
+                partyIdType: 'MSISDN',
+                partyIdentifier: jsondata['input_CustomerMSISDN'],
+                fspId: 'M-Pesa'
+              }
+            },
+            amountType: 'RECEIVE',
+            surcharge: '',
+            amount: {
+              amount: jsondata['input_Amount'],
+              currency: jsondata['input_Currency']
+            },
+            transactionType: {
+              scenario: 'TRANSFER',
+              initiator: 'PAYER',
+              initiatorType: 'CONSUMER'
+            },
+            note: 'From Mats',
+            expiration: new Date(new Date().getTime() + 10000)
+          }
+          var  url1 = `http://122.165.152.131:8444/payeefsp/callbacks/{123}`
+          console.log('Converting to Open-api Request : ',)
+          console.log()
+          console.log( transaction_request)
+          console.log('Sending to ',url1)
+         let resultmpesa = await fetch(url1, {
+                  headers: {
+                      'Accept': 'application/json',
+                  },
+                  method: "POST",
+                  body: JSON.stringify(transaction_request)
+              }) .then((response: any) => response.text())
+        
+              .then((text: any) => {
+                  try {
+                    const data = JSON.parse(text);
+                      console.log('Response received : 200')
+                      socket.write(Buffer.from('200 ok'))
+                      }
+                   catch (error) {
+                      //this._logger.error(error)
+                  }
+                })
+
+          //****************************************************************************** */
+      //     console.log("Inside xml 1234")
+      //   let result = xmlParser.xml2json(data, { compact: true, spaces: 4 });
+
+
+      //   console.log("20022xmldata", result);
+      //   var objectValue = JSON.parse(result);
+      //   let transaction_id = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['PmtId']['TxId'];
+      //   let accountnumber = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['CdtrAcct']['Id']['Other']['Id']['_text'];
+      //   let customerMSDISDN = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['Cdtr']['CtctDtls']['MobNb']['_text'];
+      //   let amount = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['IntrBkSttlmAmt']['amount']['_text'];
+      //   let currency_code = objectValue['Document']['FIToFICstmrCdtTrf']['CdtTrfTxInf']['IntrBkSttlmAmt']['Ccy']['_text']
+      //    json_withdrawal_request = {
+      //       "input_AccountNumber": accountnumber,
+      //       "input_CustomerMSISDN": customerMSDISDN,
+      //       "input_Amount": amount,
+      //       "input_Currency": currency_code,
+      //       "input_TransactionID": transaction_id
+      //   }
+
+      //   console.log('Request : ', json_withdrawal_request)
+      //  let result200 = await fetch(url, {
+      //           headers: {
+      //               'Accept': 'application/json',
+      //           },
+      //           method: "POST",
+      //           body: JSON.stringify(json_withdrawal_request)
+      //       }) .then((response: any) => response.text())
+      
+      //       .then((text: any) => {
+      //           try {
+      //             const data = JSON.parse(text);
+      //               console.log('data',data)
+      //               if (data['output_ResponseCode'] == '0') {
+  
+      //                   console.log("Transaction result:", data['output_ResponseDesc'])
+      //                   const iso20022 = {
+      //                       "code": "3000",
+      //                       "message": "Success"
+      //                   }
+      //                   socket.write(Buffer.from(js2xmlparser.parse("response", iso20022)))
+                    
+      //               } else if (data['output_ResponseCode'] == '-1') {
+  
+      //                   console.log("Transaction result:", data['output_ResponseDesc'])
+      //                   const iso20022 = {
+      //                       "code": "xxxx",
+      //                       "message": "Failure"
+      //                   }
+      //                   socket.write(Buffer.from(js2xmlparser.parse("response", iso20022)))
+      //               } else if (data['output_ResponseCode'] == '-3') {
+  
+      //                   console.log("Transaction result:", data['output_ResponseDesc'])
+      //                   const iso20022 = {
+      //                       "code": "4000",
+      //                       "message": "Duplicate"
+      //                   }
+      //                   socket.write(Buffer.from(js2xmlparser.parse("response", iso20022)))
+      //               }
+      //           } catch (error) {
+      //               //this._logger.error(error)
+      //           }
+      //         })
+      //       }
+              }}catch (error) {
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
         this._logger.error(`${this._lpsId} relay: Failed to handle iso message.`)
         this._logger.error(error.message)
       }
@@ -274,10 +635,21 @@ export class BaseTcpRelay implements TcpRelay {
     switch (mti) {
       case '0100':
         return LegacyMessageType.authorizationRequest
+<<<<<<< HEAD
       case '0200':
         return LegacyMessageType.financialRequest
       case '0420':
         return LegacyMessageType.reversalRequest
+=======
+       case '0200':
+        return LegacyMessageType.financialRequest
+      // case '0420':
+      //   return LegacyMessageType.reversalRequest
+      //   case 'xml ':
+      //   return LegacyMessageType.financialRequest
+      //   case '0421':
+      //   return LegacyMessageType.financialRequest
+>>>>>>> f713b039b0c1ea3fb69de0373bf0d969912bb2fe
       default:
         throw new Error(this._lpsId + 'relay: Cannot handle legacy message with mti: ' + mti)
     }
