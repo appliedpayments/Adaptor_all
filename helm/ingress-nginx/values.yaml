@@ -34,8 +34,8 @@ defaultbackend:
 ##
 # tcp:
 #  <nginx port>: "<namespace/service name>:<service port>"
-tcp: {}
-
+tcp:
+ 3001: "moja/lpsadaptor-lps-adapter:3001"
 # UDP service key:value pairs
 # Ref: https://github.com/kubernetes/contrib/tree/master/ingress/controllers/nginx/examples/udp
 ##
